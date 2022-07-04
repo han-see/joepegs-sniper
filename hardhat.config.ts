@@ -1,42 +1,45 @@
-import * as dotenv from "dotenv";
-
-import { HardhatUserConfig, task } from "hardhat/config";
-import "@nomiclabs/hardhat-etherscan";
-import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
+import "@nomiclabs/hardhat-waffle";
+import "@nomiclabs/hardhat-etherscan";
+import "@nomiclabs/hardhat-ethers";
 import "hardhat-gas-reporter";
+import "dotenv/config";
 import "solidity-coverage";
+import "hardhat-deploy";
+import "solidity-coverage";
+import { HardhatUserConfig } from "hardhat/config";
 
-dotenv.config();
-
-// This is a sample Hardhat task. To learn how to create your own go to
-// https://hardhat.org/guides/create-task.html
-task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
-  const accounts = await hre.ethers.getSigners();
-
-  for (const account of accounts) {
-    console.log(account.address);
-  }
-});
-
-// You need to export an object to set up your config
-// Go to https://hardhat.org/config/ to learn more
+const FUJI_PRIVATE_KEY =
+  process.env.FUJI_PRIVATE_KEY ||
+  "0x11ee3108a03081fe260ecdc106554d09d9d1209bcafd46942b10e02943effc4a";
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.4",
+  defaultNetwork: "hardhat",
   networks: {
-    ropsten: {
-      url: process.env.ROPSTEN_URL || "",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    hardhat: {
+      chainId: 31337,
+      forking: {
+        url: "https://api.avax.network/ext/bc/C/rpc",
+      },
+    },
+    fuji: {
+      chainId: 43113,
+      gasPrice: 225000000000,
+      url: "https://api.avax-test.network/ext/bc/C/rpc",
+      accounts: [FUJI_PRIVATE_KEY],
     },
   },
-  gasReporter: {
-    enabled: process.env.REPORT_GAS !== undefined,
-    currency: "USD",
+  solidity: {
+    compilers: [
+      {
+        version: "0.8.4",
+      },
+    ],
   },
-  etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+  namedAccounts: {
+    deployer: {
+      default: 0,
+    },
   },
 };
 
