@@ -8,6 +8,7 @@ import "solidity-coverage";
 import "hardhat-deploy";
 import "solidity-coverage";
 import { HardhatUserConfig } from "hardhat/config";
+import "hardhat-abi-exporter";
 
 const PRIVATE_KEY =
   process.env.PRIVATE_KEY ||
@@ -48,6 +49,8 @@ const config: HardhatUserConfig = {
       default: 0,
     },
   },
+
+  
 };
 
 export default config;
