@@ -6,7 +6,7 @@ import {
 } from "./getLastFlatLaunchpeg";
 
 async function main() {
-    const provider = new WebSocketProvider(process.env.MORALIS_WS_URL!);
+    const provider = new JsonRpcProvider(process.env.MORALIS_RPC_URL!);
     const webhook = new Webhook("New listing");
 
     await listenToListingEvent(provider, webhook);
