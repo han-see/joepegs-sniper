@@ -1,4 +1,4 @@
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { JsonRpcProvider, WebSocketProvider } from "@ethersproject/providers";
 import { Webhook } from "../commons/Webhook";
 import {
     getLastFlatLaunchpeg,
@@ -6,12 +6,10 @@ import {
 } from "./getLastFlatLaunchpeg";
 
 async function main() {
-    const provider = new JsonRpcProvider(
-        "https://api.avax.network/ext/bc/C/rpc"
-    );
+    const provider = new WebSocketProvider(process.env.MORALIS_WS_URL!);
     const webhook = new Webhook("New listing");
 
-    await getLastFlatLaunchpeg(provider, webhook);
+    await listenToListingEvent(provider, webhook);
 }
 
 main()

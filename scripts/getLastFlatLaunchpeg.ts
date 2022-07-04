@@ -55,15 +55,15 @@ export async function listenToListingEvent(
     };
     console.log("Listening to event");
     while (true) {
-        // provider.on(filterLog, (listingEvent) => {
-        //     console.log(listingEvent);
-        //     webhook.sendMessageToUser(
-        //         JSON.stringify(listingEvent),
-        //         listingEvent[0].transactionHash
-        //     );
-        // });
-        provider.on("block", (blockNumber) => {
-            console.log(`Current blocknumber ${blockNumber}`);
+        provider.on(filterLog, (listingEvent) => {
+            console.log(listingEvent);
+            webhook.sendMessageToUser(
+                JSON.stringify(listingEvent),
+                listingEvent[0].transactionHash
+            );
         });
+        /* provider.on("blockNumber", (blockNumber) => {
+            console.log(`Current blocknumber ${blockNumber}`);
+        }); */
     }
 }
