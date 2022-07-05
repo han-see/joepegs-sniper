@@ -1,22 +1,20 @@
-import { JsonRpcProvider, WebSocketProvider } from "@ethersproject/providers";
+import { Wallet } from "ethers";
+import { ethers } from "hardhat";
 import { Webhook } from "../commons/Webhook";
-import {
-    getLastFlatLaunchpeg,
-    listenToListingEvent,
-} from "./getLastFlatLaunchpeg";
+import { EventListener } from "./EventListener";
 
-async function main() {
-    const provider = new JsonRpcProvider(process.env.MORALIS_RPC_URL!);
-    const webhook = new Webhook("New listing");
+function runBot() {
+    const mainPK = process.env.PRIVATE_KEY;
+    const MORALIS_RPC_URL = process.env.MORALIS_RPC_URL!;
+    const mainAccount: Wallet = new Wallet(mainPK!);
+    const listingContractWebhook = new Webhook("New listing");
 
-    await listenToListingEvent(provider, webhook);
+    const eventListener = new EventListener(
+        mainAccount,
+        MORALIS_RPC_URL,
+        listingContractWebhook
+    );
+    eventListener.getLastFlatLaunchpeg();
 }
 
-main()
-    .then(() => {
-        process.exit(0);
-    })
-    .catch((err) => {
-        console.error(err);
-        process.exit(1);
-    });
+runBot();
