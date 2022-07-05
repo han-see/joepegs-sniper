@@ -13,7 +13,7 @@ function runBot() {
         MORALIS_RPC_URL,
         listingContractWebhook
     );
-    eventListener.getLastFlatLaunchpeg();
+    eventListener.listenToEventFromRpcUrl();
 }
 
 runBot();
