@@ -1,5 +1,4 @@
 import { Wallet } from "ethers";
-import { ethers } from "hardhat";
 import { Webhook } from "../commons/Webhook";
 import { EventListener } from "./EventListener";
 

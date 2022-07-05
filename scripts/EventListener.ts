@@ -1,11 +1,8 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { error } from "console";
 import { Wallet } from "ethers";
 import { ethers } from "hardhat";
 import { Webhook } from "../commons/Webhook";
-import { IFlatLaunchpegABI } from "../constants/index";
 import {
-    JOEPEGS_FACTORY_CONTRACT,
     JOEPEGS_PROXY_CONTRACT,
     SNOWSIGHT_KEY,
     SNOWSIGHT_WS,
