@@ -8,6 +8,8 @@ import {
     SNOWSIGHT_WS,
 } from "../global/config";
 import WebSocket from "ws";
+import { MintBot } from "./bot";
+import { IFlatLaunchpegABI } from "../constants";
 export interface MempoolResponse {
     blockNumber: string;
     from: string;
@@ -25,19 +27,22 @@ export interface MempoolResponse {
 export class EventListener {
     private provider: JsonRpcProvider;
     private webhook: Webhook;
-    private account: Wallet;
+    private bots: MintBot[];
+    private joeFlatLaunchpegTopics: string = ethers.utils.id(
+        "Initialized(uint256,uint256,uint256,uint256)"
+    );
+    private flatLaunchpeg = IFlatLaunchpegABI;
+    private iface = new ethers.utils.Interface(this.flatLaunchpeg);
 
     // Initialized event from the flatLaunchPeg
     private filterLog = {
-        topics: [
-            ethers.utils.id("Initialized(uint256,uint256,uint256,uint256)"),
-        ],
+        topics: [this.joeFlatLaunchpegTopics],
     };
 
-    constructor(account: Wallet, rpcUrl: string, webhook: Webhook) {
+    constructor(rpcUrl: string, webhook: Webhook, bots: MintBot[]) {
         this.provider = new JsonRpcProvider(rpcUrl);
-        this.account = account;
         this.webhook = webhook;
+        this.bots = bots;
     }
 
     async listenToEventFromRpcUrl() {
@@ -58,6 +63,15 @@ export class EventListener {
                     JOEPEGS_PROXY_CONTRACT.toLowerCase()
                 ) {
                     this.webhook.sendMessageToUser(JSON.stringify(log));
+                    const logs = txReceipt.logs;
+                    for (const bot of this.bots) {
+                        //bot.mintFreeFlatJoePeg(logs[1], txReceipt.to);
+                        for (const log of logs) {
+                            if (log.topics[0] === this.joeFlatLaunchpegTopics) {
+                                let events = this.iface.parseLog(log);
+                            }
+                        }
+                    }
                 }
             }
         });
@@ -90,7 +104,8 @@ export class EventListener {
                 const txReceipt = await this.provider.getTransactionReceipt(
                     getSaleEvent[0].transactionHash
                 );
-                console.log(txReceipt);
+                console.log("TXRECEIPT", txReceipt);
+                console.log("LOGGGGG" + txReceipt.logs);
                 if (
                     txReceipt.to.toLowerCase() ===
                     JOEPEGS_PROXY_CONTRACT.toLowerCase()
@@ -99,52 +114,22 @@ export class EventListener {
                         JSON.stringify(getSaleEvent),
                         getSaleEvent[0].transactionHash
                     );
+                    const logs = txReceipt.logs;
+                    for (const bot of this.bots) {
+                        //bot.mintFreeFlatJoePeg(logs[1], txReceipt.to);
+                        for (const log of logs) {
+                            if (log.topics[0] === this.joeFlatLaunchpegTopics) {
+                                let events = this.iface.parseLog(log);
+                                console.log(events);
+                            }
+                        }
+                    }
                     isEventFound = true;
+                } else {
+                    currentBlock = pastBlock;
+                    pastBlock -= 2000;
                 }
             }
         }
-    }
-
-    // not needed
-    async listenToListingEventInMempool() {
-        if (this.account == undefined) {
-            throw "Account is undefined";
-        }
-        const signed_key = await this.account.signMessage(SNOWSIGHT_KEY);
-
-        const message = JSON.stringify({
-            signed_key: signed_key,
-            include_finalized: true,
-        });
-
-        const ws = new WebSocket(SNOWSIGHT_WS);
-
-        ws.on("open", () => {
-            console.log("Ws::open");
-            ws.send(
-                JSON.stringify({
-                    signed_key: signed_key,
-                    include_finalized: true,
-                })
-            );
-        });
-        console.log("Listening to contract listing event");
-
-        ws.on("message", (data) => {
-            this.checkMempoolResponseForSaleEvent(data);
-        });
-    }
-
-    // not needed yet
-    private checkMempoolResponseForSaleEvent(data: any) {
-        const mempoolResponse: MempoolResponse = JSON.parse(data.toString());
-        /* if (
-            mempoolResponse.to === JOEPEGS_FACTORY_CONTRACT.toLowerCase() &&
-            mempoolResponse.blockNumber === "0x0"
-        ) {
-            console.log(new Date().toUTCString());
-            console.log(mempoolResponse);
-        } */
-        console.log(mempoolResponse);
     }
 }
