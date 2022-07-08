@@ -2,7 +2,7 @@ import { Wallet } from "ethers";
 import { Webhook } from "../commons/Webhook";
 import { EventListener } from "./EventListener";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { MintBot } from "./bot";
+import { MintBot } from "./Bot";
 require("dotenv").config();
 
 function runBot() {
