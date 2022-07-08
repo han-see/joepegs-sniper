@@ -3,7 +3,7 @@ import { BigNumber, Wallet } from "ethers";
 import { ethers } from "ethers";
 import { Webhook } from "../commons/Webhook";
 import { JOEPEGS_PROXY_CONTRACT } from "../global/config";
-import { MintBot } from "./bot";
+import { MintBot } from "./Bot";
 import { FlatLaunchpegABI } from "../constants";
 export interface MempoolResponse {
     blockNumber: string;
