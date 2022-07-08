@@ -60,29 +60,22 @@ export class EventListener {
                     log[0].transactionHash
                 );
                 console.log(txReceipt);
-                if (
-                    txReceipt.to.toLowerCase() ===
-                    JOEPEGS_PROXY_CONTRACT.toLowerCase()
-                ) {
-                    this.webhook.sendMessageToUser(JSON.stringify(log));
-                    const logs = txReceipt.logs;
-                    for (const bot of this.bots) {
-                        for (const log of logs) {
-                            if (log.topics[0] === this.joeFlatLaunchpegTopics) {
-                                let events = this.iface.parseLog(log);
-                                //@ts-ignore
-                                const initializedEvent: FlatJoeInitializedEvent =
-                                    events.args;
-                                if (
-                                    initializedEvent.salePrice.eq(
-                                        BigNumber.from(0)
-                                    )
-                                ) {
-                                    bot.mintFreeFlatJoePeg(
-                                        initializedEvent.publicSaleStartTime.toNumber(),
-                                        txReceipt.to
-                                    );
-                                }
+                this.webhook.sendMessageToUser(JSON.stringify(log));
+                const logs = txReceipt.logs;
+                for (const bot of this.bots) {
+                    for (const log of logs) {
+                        if (log.topics[0] === this.joeFlatLaunchpegTopics) {
+                            let events = this.iface.parseLog(log);
+                            //@ts-ignore
+                            const initializedEvent: FlatJoeInitializedEvent =
+                                events.args;
+                            if (
+                                initializedEvent.salePrice.eq(BigNumber.from(0))
+                            ) {
+                                bot.mintFreeFlatJoePeg(
+                                    initializedEvent.publicSaleStartTime.toNumber(),
+                                    txReceipt.to
+                                );
                             }
                         }
                     }
@@ -119,19 +112,13 @@ export class EventListener {
                     getSaleEvent[0].transactionHash
                 );
                 console.log("TXRECEIPT", txReceipt);
-                if (
-                    txReceipt.to.toLowerCase() ===
-                    JOEPEGS_PROXY_CONTRACT.toLowerCase()
-                ) {
-                    await this.webhook.sendMessageToUser(
-                        JSON.stringify(getSaleEvent),
-                        getSaleEvent[0].transactionHash
-                    );
-                    isEventFound = true;
-                } else {
-                    currentBlock = pastBlock;
-                    pastBlock -= 2000;
-                }
+                await this.webhook.sendMessageToUser(
+                    JSON.stringify(getSaleEvent),
+                    getSaleEvent[0].transactionHash
+                );
+                currentBlock = pastBlock;
+                pastBlock -= 2000;
+                isEventFound = true;
             }
         }
     }

@@ -20,8 +20,8 @@ function runBot() {
         listingContractWebhook,
         bots
     );
-    eventListener.listenToEventFromRpcUrl();
-    //eventListener.getLastFlatLaunchpeg();
+    //eventListener.listenToEventFromRpcUrl();
+    eventListener.getLastFlatLaunchpeg();
 }
 
 function initiateBot(): MintBot[] {
