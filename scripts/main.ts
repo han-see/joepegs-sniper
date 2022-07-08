@@ -6,17 +6,20 @@ import { MintBot } from "./Bot";
 require("dotenv").config();
 
 function runBot() {
-    const mainPK = process.env.PRIVATE_KEY;
-    const MORALIS_RPC_URL = process.env.MORALIS_RPC_URL!;
+    const isTest = process.argv[2] === "test" ? true : false;
+    const mainPK = isTest ? process.env.TEST_PK! : process.env.PRIVATE_KEY!;
+    const RPC_URL = isTest
+        ? process.env.TEST_RPC!
+        : process.env.MORALIS_RPC_URL!;
     const mainAccount: Wallet = new Wallet(
         mainPK!,
-        new JsonRpcProvider(MORALIS_RPC_URL)
+        new JsonRpcProvider(RPC_URL)
     );
     const listingContractWebhook = new Webhook("New listing");
-    const bots: MintBot[] = initiateBot();
+    const bots: MintBot[] = initiateBot(RPC_URL, mainPK);
 
     const eventListener = new EventListener(
-        MORALIS_RPC_URL,
+        RPC_URL,
         listingContractWebhook,
         bots
     );
@@ -24,15 +27,10 @@ function runBot() {
     // eventListener.getLastFlatLaunchpeg();
 }
 
-function initiateBot(): MintBot[] {
+function initiateBot(rpcUrl: string, pk: string): MintBot[] {
     //TODO change this
     const bots: MintBot[] = [];
-    const mainPK = process.env.PRIVATE_KEY;
-    const MORALIS_RPC_URL = process.env.MORALIS_RPC_URL!;
-    const account: Wallet = new Wallet(
-        mainPK!,
-        new JsonRpcProvider(MORALIS_RPC_URL)
-    );
+    const account: Wallet = new Wallet(pk, new JsonRpcProvider(rpcUrl));
     const webhook: Webhook = new Webhook("Bot 1");
     const bot = new MintBot(account, webhook);
     bots.push(bot);
