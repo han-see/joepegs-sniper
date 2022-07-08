@@ -13,7 +13,6 @@
         "./test",
         "./typechain",
         "./constants",
-        "./commons"
-    ],
-    "files": ["./hardhat.config.ts"]
+        "./commons",
+    ]
 }
