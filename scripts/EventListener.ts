@@ -116,8 +116,6 @@ export class EventListener {
                     JSON.stringify(getSaleEvent),
                     getSaleEvent[0].transactionHash
                 );
-                currentBlock = pastBlock;
-                pastBlock -= 2000;
                 isEventFound = true;
             }
         }
