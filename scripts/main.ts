@@ -3,9 +3,11 @@ import { Webhook } from "../commons/Webhook";
 import { EventListener } from "./EventListener";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { MintBot } from "./bot";
+require("dotenv").config();
 
 function runBot() {
     const mainPK = process.env.PRIVATE_KEY;
+    console.log("MAINPK", mainPK);
     const MORALIS_RPC_URL = process.env.MORALIS_RPC_URL!;
     const mainAccount: Wallet = new Wallet(
         mainPK!,
