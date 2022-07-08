@@ -1,8 +1,7 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { BigNumber, Wallet } from "ethers";
+import { BigNumber} from "ethers";
 import { ethers } from "ethers";
 import { Webhook } from "../commons/Webhook";
-import { JOEPEGS_PROXY_CONTRACT } from "../global/config";
 import { MintBot } from "./Bot";
 import { FlatLaunchpegABI } from "../constants";
 export interface MempoolResponse {
