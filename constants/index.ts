@@ -1,1 +1,1 @@
-export { default as IFlatLaunchpegABI } from "../abi/contracts/interfaces/IFlatLaunchpeg.sol/IFlatLaunchpeg.json";
+export { default as FlatLaunchpegABI } from "../abi/contracts/FlatLaunchpeg.sol/FlatLaunchpeg.json";

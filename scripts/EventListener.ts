@@ -1,15 +1,10 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { Wallet } from "ethers";
+import { BigNumber, Wallet } from "ethers";
 import { ethers } from "hardhat";
 import { Webhook } from "../commons/Webhook";
-import {
-    JOEPEGS_PROXY_CONTRACT,
-    SNOWSIGHT_KEY,
-    SNOWSIGHT_WS,
-} from "../global/config";
-import WebSocket from "ws";
+import { JOEPEGS_PROXY_CONTRACT } from "../global/config";
 import { MintBot } from "./bot";
-import { IFlatLaunchpegABI } from "../constants";
+import { FlatLaunchpegABI } from "../constants";
 export interface MempoolResponse {
     blockNumber: string;
     from: string;
@@ -24,6 +19,13 @@ export interface MempoolResponse {
     value: string;
     txType: string;
 }
+
+export interface FlatJoeInitializedEvent {
+    allowlistStartTime: BigNumber;
+    publicSaleStartTime: BigNumber;
+    allowlistPrice: BigNumber;
+    salePrice: BigNumber;
+}
 export class EventListener {
     private provider: JsonRpcProvider;
     private webhook: Webhook;
@@ -31,7 +33,7 @@ export class EventListener {
     private joeFlatLaunchpegTopics: string = ethers.utils.id(
         "Initialized(uint256,uint256,uint256,uint256)"
     );
-    private flatLaunchpeg = IFlatLaunchpegABI;
+    private flatLaunchpeg = FlatLaunchpegABI;
     private iface = new ethers.utils.Interface(this.flatLaunchpeg);
 
     // Initialized event from the flatLaunchPeg
@@ -65,10 +67,22 @@ export class EventListener {
                     this.webhook.sendMessageToUser(JSON.stringify(log));
                     const logs = txReceipt.logs;
                     for (const bot of this.bots) {
-                        //bot.mintFreeFlatJoePeg(logs[1], txReceipt.to);
                         for (const log of logs) {
                             if (log.topics[0] === this.joeFlatLaunchpegTopics) {
                                 let events = this.iface.parseLog(log);
+                                //@ts-ignore
+                                const initializedEvent: FlatJoeInitializedEvent =
+                                    events.args;
+                                if (
+                                    initializedEvent.salePrice.eq(
+                                        BigNumber.from(0)
+                                    )
+                                ) {
+                                    bot.mintFreeFlatJoePeg(
+                                        initializedEvent.publicSaleStartTime.toNumber(),
+                                        txReceipt.to
+                                    );
+                                }
                             }
                         }
                     }
@@ -105,7 +119,6 @@ export class EventListener {
                     getSaleEvent[0].transactionHash
                 );
                 console.log("TXRECEIPT", txReceipt);
-                console.log("LOGGGGG" + txReceipt.logs);
                 if (
                     txReceipt.to.toLowerCase() ===
                     JOEPEGS_PROXY_CONTRACT.toLowerCase()
@@ -114,16 +127,6 @@ export class EventListener {
                         JSON.stringify(getSaleEvent),
                         getSaleEvent[0].transactionHash
                     );
-                    const logs = txReceipt.logs;
-                    for (const bot of this.bots) {
-                        //bot.mintFreeFlatJoePeg(logs[1], txReceipt.to);
-                        for (const log of logs) {
-                            if (log.topics[0] === this.joeFlatLaunchpegTopics) {
-                                let events = this.iface.parseLog(log);
-                                console.log(events);
-                            }
-                        }
-                    }
                     isEventFound = true;
                 } else {
                     currentBlock = pastBlock;

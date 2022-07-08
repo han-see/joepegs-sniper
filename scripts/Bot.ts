@@ -1,6 +1,6 @@
 import { Webhook } from "../commons/Webhook";
 import { Contract, Wallet } from "ethers";
-import { IFlatLaunchpegABI } from "../constants";
+import { FlatLaunchpegABI } from "../constants";
 
 export interface IMintBot {
     mintFreeFlatJoePeg: (mintTime: number, contractAddress: string) => void;
@@ -9,7 +9,7 @@ export interface IMintBot {
 export class MintBot implements IMintBot {
     private account: Wallet;
     private webhook: Webhook;
-    private flatLaunchpeg = IFlatLaunchpegABI;
+    private flatLaunchpeg = FlatLaunchpegABI;
 
     constructor(account: Wallet, webhook: Webhook) {
         this.account = account;
