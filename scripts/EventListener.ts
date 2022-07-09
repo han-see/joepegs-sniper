@@ -1,5 +1,5 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { BigNumber} from "ethers";
+import { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import { Webhook } from "../commons/Webhook";
 import { MintBot } from "./Bot";
@@ -54,9 +54,9 @@ export class EventListener {
         console.log("Listening to event");
         this.provider.on(this.filterLog, async (log) => {
             console.log(log);
-            if (log.length !== 0) {
+            if (log !== undefined) {
                 const txReceipt = await this.provider.getTransactionReceipt(
-                    log[0].transactionHash
+                    log.transactionHash
                 );
                 console.log(txReceipt);
                 this.webhook.sendMessageToUser(JSON.stringify(log));
@@ -65,6 +65,7 @@ export class EventListener {
                     for (const log of logs) {
                         if (log.topics[0] === this.joeFlatLaunchpegTopics) {
                             let events = this.iface.parseLog(log);
+                            console.log(events);
                             //@ts-ignore
                             const initializedEvent: FlatJoeInitializedEvent =
                                 events.args;
