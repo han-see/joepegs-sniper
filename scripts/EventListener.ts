@@ -58,8 +58,9 @@ export class EventListener {
                 const txReceipt = await this.provider.getTransactionReceipt(
                     log.transactionHash
                 )
-                console.log(txReceipt)
-                this.webhook.sendMessageToUser(JSON.stringify(log))
+                this.webhook.sendMessageToUser(
+                    JSON.stringify(log.transactionHash)
+                )
                 const logs = txReceipt.logs
                 for (const bot of this.bots) {
                     for (const log of logs) {
