@@ -25,7 +25,7 @@ function runBot() {
 
 function initiateBot(rpcUrl: string, privateKeys: string[]): MintBot[] {
     const bots: MintBot[] = []
-    let i = 0
+    let i = 1
     for (let pk of privateKeys) {
         const account: Wallet = new Wallet(pk, new JsonRpcProvider(rpcUrl))
         const webhook: Webhook = new Webhook(`Bot ${i}`)
