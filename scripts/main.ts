@@ -31,7 +31,7 @@ function initiateBot(rpcUrl: string, privateKeys: string[]): MintBot[] {
         const webhook: Webhook = new Webhook(`Bot ${i}`)
         const bot = new MintBot(account, webhook)
         bots.push(bot)
-        console.log(`Bot ${i} initiated`)
+        console.log(`Bot ${i} initiated : ${account.address}`)
         i++
     }
     return bots
