@@ -46,8 +46,11 @@ function manualMint(
     contractAddress: string,
     bots: MintBot[]
 ) {
+    let counter = 1
     for (const bot of bots) {
+        console.log(`Initiating bot ${counter}`)
         bot.mintFreeFlatJoePeg(mintTime, contractAddress)
+        counter++
     }
 }
 
