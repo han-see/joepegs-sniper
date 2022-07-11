@@ -8,9 +8,7 @@ require("dotenv").config()
 function runBot() {
     const isTest = process.argv[2] === "test" ? true : false
     const mainPK = isTest ? process.env.TEST_PK! : process.env.PRIVATE_KEY!
-    const RPC_URL = isTest
-        ? process.env.TEST_RPC!
-        : process.env.MORALIS_RPC_URL!
+    const RPC_URL = isTest ? process.env.TEST_RPC! : process.env.AVAX_RPC_URL!
     const listingContractWebhook = new Webhook("New listing")
     const bots: MintBot[] = initiateBot(RPC_URL, JSON.parse(mainPK))
 
