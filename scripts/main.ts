@@ -19,12 +19,12 @@ function runBot() {
         listingContractWebhook,
         bots
     )
-    // eventListener.listenToEventFromRpcUrl()
+    eventListener.listenToEventFromRpcUrl()
     // eventListener.getLastFlatLaunchpeg();
     // Boolin bulls
     // 1657570800
     // 0xcf0f4519F2f55Ef40e2dDDcb7c99893297E40336
-    manualMint(1657570800, "0xcf0f4519F2f55Ef40e2dDDcb7c99893297E40336", bots)
+    // manualMint(1657570800, "0xcf0f4519F2f55Ef40e2dDDcb7c99893297E40336", bots)
 }
 
 function initiateBot(rpcUrl: string, privateKeys: string[]): MintBot[] {
