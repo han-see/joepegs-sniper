@@ -24,8 +24,6 @@ export class MintBot implements IMintBot {
         )
         if (contract !== undefined) {
             const timediff = mintTime * 1000 - new Date().getTime()
-            console.log(timediff)
-            console.log(new Date().getTime())
             if (timediff > 0) {
                 setTimeout(
                     async function (webhook: Webhook) {
