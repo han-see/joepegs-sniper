@@ -56,7 +56,7 @@ async function manualMint(
             `Manual minting time for ${contractAddress} is in the past. Turning off manual bot`
         )
         // to kill the process on manual minting
-        process.kill(process.pid, "SIGTERM")
+        process.exit(1)
     }
 }
 
