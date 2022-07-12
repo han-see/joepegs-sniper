@@ -1,13 +1,29 @@
 import { Monitor } from "forever-monitor"
+import { Webhook } from "../commons/Webhook"
 
-const mainChild = new Monitor("main.ts", {
+const mainBot = new Monitor("main.ts", {
+    max: 3,
+    silent: true,
+    args: [],
+})
+
+const manualBot = new Monitor("manual-bot", {
     max: 0,
     silent: true,
     args: [],
 })
 
-mainChild.on("exit", () => {
-    console.log("main.ts has exited after 3 restarts")
+mainBot.on("exit", () => {
+    console.log("main has exited after 3 restarts")
+    const webhook = new Webhook("Error")
+    webhook.sendMessageToUser("main.ts has exited after 3 restarts")
 })
 
-mainChild.start()
+manualBot.on("exit", () => {
+    console.log("manual-bot has exited after 3 restarts")
+    const webhook = new Webhook("Error")
+    webhook.sendMessageToUser("Manual bot cannot start")
+})
+
+mainBot.start()
+manualBot.start()
