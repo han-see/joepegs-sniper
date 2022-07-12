@@ -1,7 +1,7 @@
 {
     "scripts": {
-        "start-main": "pm2 start scripts/main.ts",
-        "start-manual": "pm2 start scripts/manual-bot.ts",
+        "start-main": "ts-node scripts/main.ts",
+        "start-manual": "ts-node scripts/manual-bot.ts",
         "test-main": "ts-node scripts/main.ts test",
         "test-manual": "ts-node scripts/manual-bot.ts test"
     },
