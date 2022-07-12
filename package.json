@@ -1,9 +1,9 @@
 {
     "scripts": {
-        "start-main": "ts-node scripts/main.ts",
-        "start-manual": "ts-node scripts/manual-bot.ts",
-        "test-main": "ts-node scripts/main.ts test",
-        "test-manual": "ts-node scripts/manual-bot.ts test"
+        "start-main": "ts-node -T scripts/main.ts",
+        "start-manual": "ts-node -T scripts/manual-bot.ts",
+        "test-main": "ts-node -T scripts/main.ts test",
+        "test-manual": "ts-node -T scripts/manual-bot.ts test"
     },
     "devDependencies": {
         "@types/chai": "^4.3.1",
