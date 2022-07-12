@@ -1,13 +1,13 @@
 import { Monitor } from "forever-monitor"
 import { Webhook } from "../commons/Webhook"
 
-const mainBot = new Monitor("main.ts", {
+const mainBot = new Monitor("./main.ts", {
     max: 3,
     silent: true,
     args: [],
 })
 
-const manualBot = new Monitor("manual-bot", {
+const manualBot = new Monitor("./manual-bot.ts", {
     max: 0,
     silent: true,
     args: [],
