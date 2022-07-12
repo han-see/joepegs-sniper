@@ -17,9 +17,14 @@ function runBot() {
         listingContractWebhook,
         bots
     )
-    eventListener.listenToEventFromRpcUrl()
+    // eventListener.listenToEventFromRpcUrl()
     // eventListener.getLastFlatLaunchpeg();
-    // manualMint(1657570800, "0xcf0f4519F2f55Ef40e2dDDcb7c99893297E40336", bots)
+    manualMint(
+        1657570800,
+        "0xcf0f4519F2f55Ef40e2dDDcb7c99893297E40336",
+        bots,
+        new JsonRpcProvider(RPC_URL)
+    )
 }
 
 function initiateBot(rpcUrl: string, privateKeys: string[]): MintBot[] {
@@ -36,16 +41,24 @@ function initiateBot(rpcUrl: string, privateKeys: string[]): MintBot[] {
     return bots
 }
 
-function manualMint(
+async function manualMint(
     mintTime: number,
     contractAddress: string,
-    bots: MintBot[]
+    bots: MintBot[],
+    provider: JsonRpcProvider
 ) {
     let counter = 1
     for (const bot of bots) {
         console.log(`Initiating bot ${counter}`)
         bot.mintFreeFlatJoePeg(mintTime, contractAddress)
         counter++
+    }
+
+    const blockNumber = await provider.getBlockNumber()
+    const blockTimestamp = (await provider.getBlock(blockNumber)).timestamp
+    if (blockTimestamp > mintTime) {
+        console.error("Mint time is in the past")
+        process.exit(1)
     }
 }
 
