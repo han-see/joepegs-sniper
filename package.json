@@ -1,9 +1,9 @@
 {
     "scripts": {
         "start-main": "ts-node scripts/main.ts",
-        "start-manual": "ts-node scripts/manual-bot.ts $ADDRESS $TIMESTAMP",
+        "start-manual": "ts-node scripts/manual-bot.ts $ADDRESS $TIMESTAMP $BOTNAME",
         "test-main": "ts-node scripts/main.ts test",
-        "test-manual": "ts-node scripts/manual-bot.ts test $ADDRESS $TIMESTAMP"
+        "test-manual": "ts-node scripts/manual-bot.ts test $ADDRESS $TIMESTAMP $BOTNAME"
     },
     "devDependencies": {
         "@types/chai": "^4.3.1",

@@ -6,11 +6,13 @@ require("dotenv").config()
 
 function runBot() {
     const isTest = process.argv[2] === "test" ? true : false
-    const mainPK = isTest ? process.env.TEST_PK! : process.env.PRIVATE_KEY!
-    const RPC_URL = isTest ? process.env.TEST_RPC! : process.env.AVAX_RPC_URL!
-    const bots: MintBot[] = initiateBot(RPC_URL, JSON.parse(mainPK))
     const contractAddress = process.env.ADDRESS || "0x"
     const timestamp = parseInt(process.env.TIMESTAMP || "0")
+    const botName = process.env.BOTNAME || "NFT"
+
+    const mainPK = isTest ? process.env.TEST_PK! : process.env.PRIVATE_KEY!
+    const RPC_URL = isTest ? process.env.TEST_RPC! : process.env.AVAX_RPC_URL!
+    const bots: MintBot[] = initiateBot(RPC_URL, JSON.parse(mainPK), botName)
 
     console.log("Contract Address: ", contractAddress)
     console.log("Mint open on: ", timestamp)
@@ -20,19 +22,23 @@ function runBot() {
         contractAddress,
         bots,
         new JsonRpcProvider(RPC_URL),
-        new Webhook("Manual bot")
+        new Webhook(`${botName} Manual bot`)
     )
 }
 
-function initiateBot(rpcUrl: string, privateKeys: string[]): MintBot[] {
+function initiateBot(
+    rpcUrl: string,
+    privateKeys: string[],
+    botName: string
+): MintBot[] {
     const bots: MintBot[] = []
     let i = 1
     for (let pk of privateKeys) {
         const account: Wallet = new Wallet(pk, new JsonRpcProvider(rpcUrl))
-        const webhook: Webhook = new Webhook(`Bot ${i}`)
+        const webhook: Webhook = new Webhook(`${botName} Manual Bot ${i}`)
         const bot = new MintBot(account, webhook)
         bots.push(bot)
-        console.log(`Bot ${i} initiated : ${account.address}`)
+        console.log(`${botName} Manual Bot ${i} initiated : ${account.address}`)
         i++
     }
     return bots
