@@ -1,4 +1,10 @@
 {
+    "scripts": {
+        "start-main": "pm2 start scripts/main.ts",
+        "start-manual": "pm2 start scripts/manual-bot.ts",
+        "test-main": "ts-node scripts/main.ts test",
+        "test-manual": "ts-node scripts/manual-bot.ts test"
+    },
     "devDependencies": {
         "@types/chai": "^4.3.1",
         "@types/forever-monitor": "^1.7.6",
