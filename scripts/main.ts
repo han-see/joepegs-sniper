@@ -23,7 +23,8 @@ function runBot() {
         1657570800,
         "0xcf0f4519F2f55Ef40e2dDDcb7c99893297E40336",
         bots,
-        new JsonRpcProvider(RPC_URL)
+        new JsonRpcProvider(RPC_URL),
+        new Webhook("Manual bot")
     )
 }
 
@@ -45,7 +46,8 @@ async function manualMint(
     mintTime: number,
     contractAddress: string,
     bots: MintBot[],
-    provider: JsonRpcProvider
+    provider: JsonRpcProvider,
+    webhook: Webhook
 ) {
     let counter = 1
     for (const bot of bots) {
@@ -57,8 +59,12 @@ async function manualMint(
     const blockNumber = await provider.getBlockNumber()
     const blockTimestamp = (await provider.getBlock(blockNumber)).timestamp
     if (blockTimestamp > mintTime) {
-        console.error("Mint time is in the past")
-        process.exit(1)
+        console.log("Mint time is in the past. Turning off manual minting.")
+        await webhook.sendMessageToUser(
+            `Manual minting time for ${contractAddress} is in the past. Turning off manual bot`
+        )
+        // to kill the process on manual minting
+        process.kill(process.pid, "SIGTERM")
     }
 }
 
