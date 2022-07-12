@@ -1,6 +1,7 @@
 import { Webhook } from "../commons/Webhook"
 import { Contract, Wallet } from "ethers"
 import { FlatLaunchpegABI } from "../constants"
+import { error } from "console"
 
 export interface IMintBot {
     mintFreeFlatJoePeg: (mintTime: number, contractAddress: string) => void
@@ -22,6 +23,15 @@ export class MintBot implements IMintBot {
             this.flatLaunchpeg,
             this.account
         )
+
+        contract.provider.getCode(contractAddress).catch((err) => {
+            const errorMessage =
+                "This is probably a wrong contract address. Please check it again"
+            console.error(errorMessage)
+            this.webhook.sendMessageToUser(errorMessage)
+            console.log(err)
+        })
+
         if (contract !== undefined) {
             const timediff = mintTime * 1000 - new Date().getTime()
             if (timediff > 0) {
@@ -32,11 +42,8 @@ export class MintBot implements IMintBot {
                             const txReceipt = await tx.wait()
                             if (txReceipt !== undefined) {
                                 webhook.sendMessageToUser(
-                                    `MINT SUCCESS on tries number ${
-                                        i + 1
-                                    } ${JSON.stringify(
-                                        txReceipt.transactionHash
-                                    )}`
+                                    `MINT SUCCESS on tries number ${i + 1}`,
+                                    JSON.stringify(txReceipt.transactionHash)
                                 )
                                 console.log(txReceipt)
                                 return
