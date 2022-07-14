@@ -1,7 +1,9 @@
 import { Webhook } from "../commons/Webhook"
-import { Contract, Wallet } from "ethers"
+import { BigNumber, Contract, Transaction, Wallet } from "ethers"
 import { FlatLaunchpegABI } from "../constants"
 import { error } from "console"
+import { createSignedTx, createTxData } from "../utils/tx"
+import { Provider } from "@ethersproject/providers"
 
 export interface IMintBot {
     mintFreeFlatJoePeg: (mintTime: number, contractAddress: string) => void
@@ -10,14 +12,17 @@ export interface IMintBot {
 export class MintBot implements IMintBot {
     private account: Wallet
     private webhook: Webhook
+    private provider: Provider
+    private signedTx = ""
     private flatLaunchpeg = FlatLaunchpegABI
 
-    constructor(account: Wallet, webhook: Webhook) {
+    constructor(account: Wallet, webhook: Webhook, provider: Provider) {
         this.account = account
         this.webhook = webhook
+        this.provider = provider
     }
 
-    mintFreeFlatJoePeg(mintTime: number, contractAddress: string) {
+    async mintFreeFlatJoePeg(mintTime: number, contractAddress: string) {
         const contract = new Contract(
             contractAddress,
             this.flatLaunchpeg,
@@ -34,11 +39,36 @@ export class MintBot implements IMintBot {
 
         if (contract !== undefined) {
             const timediff = mintTime * 1000 - new Date().getTime()
+            // amount of nft to mint
+            const args = [BigNumber.from(1)]
+            try {
+                const txData = await createTxData(
+                    this.flatLaunchpeg,
+                    "publicSaleMint",
+                    args
+                )
+                this.signedTx = await createSignedTx(
+                    this.account,
+                    txData,
+                    contractAddress,
+                    "0"
+                )
+                console.log(`Tx generated: ${this.signedTx}`)
+            } catch (err) {
+                console.log(err)
+                this.webhook.sendMessageToUser(
+                    `Error during creating tx: ${err}`
+                )
+            }
             if (timediff > 0) {
                 setTimeout(
-                    async function (webhook: Webhook) {
+                    async function (
+                        webhook: Webhook,
+                        provider: Provider,
+                        signedTx: string
+                    ) {
                         for (let i = 0; i < 2; i++) {
-                            const tx = await contract.publicSaleMint(1)
+                            const tx = await provider.sendTransaction(signedTx)
                             const txReceipt = await tx.wait()
                             if (txReceipt !== undefined) {
                                 webhook.sendMessageToUser(
@@ -54,7 +84,9 @@ export class MintBot implements IMintBot {
                         )
                     },
                     timediff,
-                    this.webhook
+                    this.webhook,
+                    this.provider,
+                    this.signedTx
                 )
             } else {
                 this.webhook.sendMessageToUser(
