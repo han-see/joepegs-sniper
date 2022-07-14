@@ -25,9 +25,10 @@ function initiateBot(rpcUrl: string, privateKeys: string[]): MintBot[] {
     const bots: MintBot[] = []
     let i = 1
     for (let pk of privateKeys) {
-        const account: Wallet = new Wallet(pk, new JsonRpcProvider(rpcUrl))
+        const provider = new JsonRpcProvider(rpcUrl)
+        const account: Wallet = new Wallet(pk, provider)
         const webhook: Webhook = new Webhook(`Bot ${i}`)
-        const bot = new MintBot(account, webhook)
+        const bot = new MintBot(account, webhook, provider)
         bots.push(bot)
         console.log(`Bot ${i} initiated : ${account.address}`)
         i++
