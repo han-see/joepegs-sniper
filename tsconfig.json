@@ -8,12 +8,5 @@
         "declaration": true,
         "resolveJsonModule": true,
         "moduleResolution": "node"
-    },
-    "include": [
-        "./scripts",
-        "./test",
-        "./typechain",
-        "./constants",
-        "./commons"
-    ]
+    }
 }
