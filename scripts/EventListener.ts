@@ -1,9 +1,8 @@
 import { JsonRpcProvider } from "@ethersproject/providers"
-import { BigNumber } from "ethers"
-import { ethers } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import { Webhook } from "../commons/Webhook"
-import { MintBot } from "./Bot"
 import { FlatLaunchpegABI } from "../constants"
+import { MintBot } from "./Bot"
 export interface MempoolResponse {
     blockNumber: string
     from: string
@@ -90,7 +89,9 @@ export class EventListener {
             }
         })
         this.provider.on("block", (blockNumber) => {
-            console.log(`Current blocknumber ${blockNumber}`)
+            if (blockNumber % 1000 == 0) {
+                console.log(`Current blocknumber ${blockNumber}`)
+            }
         })
     }
 
