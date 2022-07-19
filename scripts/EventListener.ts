@@ -88,7 +88,7 @@ export class EventListener {
             }
         })
         this.provider.on("block", (blockNumber) => {
-            if (blockNumber.parseInt() % 5000 == 0) {
+            if (parseInt(blockNumber) % 5000 == 0) {
                 console.log(`Current blocknumber ${blockNumber}`)
             }
         })
