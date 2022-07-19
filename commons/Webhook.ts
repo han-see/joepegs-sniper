@@ -25,4 +25,15 @@ export class Webhook {
                 console.error("Cannot send message to discord", err)
             })
     }
+
+    async sendInfoMessage(content: string) {
+        this.embed.setDescription(content)
+        await this.userWebhookClient
+            .send({
+                embeds: [this.embed],
+            })
+            .catch((err) => {
+                console.error("Cannot send message to discord", err)
+            })
+    }
 }
