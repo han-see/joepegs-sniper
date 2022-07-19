@@ -58,38 +58,37 @@ export class EventListener {
                     log.transactionHash
                 )
                 this.webhook.sendMessageToUser(
-                    JSON.stringify(log.transactionHash)
+                    "Event found",
+                    log.transactionHash
                 )
                 const logs = txReceipt.logs
-                for (const bot of this.bots) {
-                    for (const log of logs) {
-                        if (log.topics[0] === this.joeFlatLaunchpegTopics) {
-                            let events = this.iface.parseLog(log)
-                            //@ts-ignore
-                            const initializedEvent: FlatJoeInitializedEvent =
-                                events.args
-                            console.log(`--Event found--`)
-                            console.log(
-                                `Public listing start at ${initializedEvent.publicSaleStartTime.toNumber()}`
-                            )
-                            console.log(
-                                `Minting price ${initializedEvent.salePrice.toNumber()} AVAX`
-                            )
-                            if (
-                                initializedEvent.salePrice.eq(BigNumber.from(0))
-                            ) {
-                                bot.mintFreeFlatJoePeg(
-                                    initializedEvent.publicSaleStartTime.toNumber(),
-                                    txReceipt.to
-                                )
+                for (const log of logs) {
+                    if (log.topics[0] === this.joeFlatLaunchpegTopics) {
+                        let events = this.iface.parseLog(log)
+                        //@ts-ignore
+                        const initializedEvent: FlatJoeInitializedEvent =
+                            events.args
+                        const info = `Flat Joe event found. Public listing start at ${initializedEvent.publicSaleStartTime.toNumber()}. Minting price ${initializedEvent.salePrice.toNumber()} AVAX`
+                        this.webhook.sendInfoMessage(info)
+                        console.log(info)
+                        if (initializedEvent.salePrice.eq(BigNumber.from(0)))
+                            for (const i in this.bots) {
+                                {
+                                    this.webhook.sendInfoMessage(
+                                        `Initiating Bot ${i}`
+                                    )
+                                    this.bots[i].mintFreeFlatJoePeg(
+                                        initializedEvent.publicSaleStartTime.toNumber(),
+                                        txReceipt.to
+                                    )
+                                }
                             }
-                        }
                     }
                 }
             }
         })
         this.provider.on("block", (blockNumber) => {
-            if (blockNumber % 5000 == 0) {
+            if (blockNumber.parseInt() % 5000 == 0) {
                 console.log(`Current blocknumber ${blockNumber}`)
             }
         })
