@@ -67,10 +67,15 @@ export class EventListener {
                 if (initializedEvent.salePrice.eq(BigNumber.from(0)))
                     for (const i in this.bots) {
                         {
-                            this.webhook.sendInfoMessage(`Initiating Bot ${i}`)
+                            const saleTime =
+                                initializedEvent.publicSaleStartTime.toNumber()
+                            const contractAddress = log.address
+                            this.webhook.sendInfoMessage(`Initiating Bot ${i}:
+                            Contract Address: ${contractAddress}
+                            Sale Time: ${saleTime}`)
                             this.bots[i].mintFreeFlatJoePeg(
-                                initializedEvent.publicSaleStartTime.toNumber(),
-                                log.address
+                                saleTime,
+                                contractAddress
                             )
                         }
                     }
