@@ -1,4 +1,4 @@
-import { BigNumber, ethers, Wallet } from "ethers"
+import { BigNumber, Wallet } from "ethers"
 import {
     Interface,
     parseEther,
@@ -15,8 +15,8 @@ export async function createSignedTx(
     const walletNonce = await account.getTransactionCount()
     const chainId = await account.getChainId()
     const gasLimit = BigNumber.from(400000)
-    const maxFeePerGas = parseUnits("75", "gwei")
-    const maxPriorityFeePerGas = BigNumber.from(2)
+    const maxFeePerGas = parseUnits("5000", "gwei")
+    const maxPriorityFeePerGas = BigNumber.from(100)
 
     const unSignedTx: UnsignedTransaction = {
         to: contractAddress,
