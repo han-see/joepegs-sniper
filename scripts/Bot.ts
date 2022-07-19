@@ -1,9 +1,8 @@
-import { Webhook } from "../commons/Webhook"
-import { BigNumber, Contract, Transaction, Wallet } from "ethers"
-import { FlatLaunchpegABI } from "../constants"
-import { error } from "console"
-import { createSignedTx, createTxData } from "../utils/tx"
 import { Provider } from "@ethersproject/providers"
+import { BigNumber, Contract, Wallet } from "ethers"
+import { Webhook } from "../commons/Webhook"
+import { FlatLaunchpegABI } from "../constants"
+import { createSignedTx, createTxData } from "../utils/tx"
 
 export interface IMintBot {
     mintFreeFlatJoePeg: (mintTime: number, contractAddress: string) => void
@@ -38,7 +37,8 @@ export class MintBot implements IMintBot {
         })
 
         if (contract !== undefined) {
-            const timediff = mintTime * 1000 - new Date().getTime()
+            // try -1 to offset network
+            const timediff = mintTime * 1000 - new Date().getTime() - 1
             // amount of nft to mint
             const args = [BigNumber.from(1)]
             try {
@@ -54,6 +54,7 @@ export class MintBot implements IMintBot {
                     "0"
                 )
                 console.log(`Tx generated: ${this.signedTx}`)
+                this.webhook.sendInfoMessage(`Tx preparation completed`)
             } catch (err) {
                 console.log(err)
                 this.webhook.sendMessageToUser(
@@ -67,21 +68,32 @@ export class MintBot implements IMintBot {
                         provider: Provider,
                         signedTx: string
                     ) {
-                        for (let i = 0; i < 2; i++) {
-                            const tx = await provider.sendTransaction(signedTx)
-                            const txReceipt = await tx.wait()
-                            if (txReceipt !== undefined) {
-                                webhook.sendMessageToUser(
-                                    `MINT SUCCESS on tries number ${i + 1}`,
-                                    JSON.stringify(txReceipt.transactionHash)
-                                )
-                                console.log(txReceipt)
-                                return
-                            }
-                        }
-                        webhook.sendMessageToUser(
-                            "TX failed to mint after 2 tries"
+                        webhook.sendInfoMessage(
+                            "Waiting to send transaction before the mint is open"
                         )
+                        for (let i = 0; i < 3; i++) {
+                            const tx = provider
+                                .sendTransaction(signedTx)
+                                .then((txResponse) => {
+                                    txResponse.wait(1).then((txReceipt) => {
+                                        if (txReceipt !== undefined) {
+                                            webhook.sendMessageToUser(
+                                                `MINT SUCCESS on tries number ${
+                                                    i + 1
+                                                }`,
+                                                JSON.stringify(
+                                                    txReceipt.transactionHash
+                                                )
+                                            )
+                                            console.log(txReceipt)
+                                            return
+                                        }
+                                    })
+                                })
+                                .catch((err) => {
+                                    webhook.sendInfoMessage(`Tx failed ${err}`)
+                                })
+                        }
                     },
                     timediff,
                     this.webhook,
