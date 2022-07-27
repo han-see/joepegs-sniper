@@ -1,35 +1,41 @@
-import { Wallet } from "ethers"
-import { Webhook } from "../commons/Webhook"
-import { EventListener } from "./EventListener"
 import { JsonRpcProvider } from "@ethersproject/providers"
+import { Wallet } from "ethers"
+import { privateKeys, RPC_URLS } from "../global/config"
+import { Webhook } from "../global/Webhook"
 import { MintBot } from "./Bot"
-require("dotenv").config()
+import { EventListener } from "./EventListener"
 
 function runBot() {
-    const isTest = process.argv[2] === "test" ? true : false
-    const mainPK = isTest ? process.env.TEST_PK! : process.env.PRIVATE_KEY!
-    const RPC_URL = isTest ? process.env.TEST_RPC! : process.env.AVAX_RPC_URL!
     const listingContractWebhook = new Webhook("New listing")
-    const bots: MintBot[] = initiateBot(RPC_URL, JSON.parse(mainPK))
 
     const eventListener = new EventListener(
-        RPC_URL,
+        RPC_URLS,
         listingContractWebhook,
-        bots
+        privateKeys
     )
     eventListener.listenToEventFromRpcUrl()
     // eventListener.getLastFlatLaunchpeg();
+    // listenToListingEventInMempool(JSON.parse(mainPK)[0])
 }
 
-function initiateBot(rpcUrl: string, privateKeys: string[]): MintBot[] {
+export function initiateBot(
+    rpcUrls: string[],
+    privateKeys: string[]
+): MintBot[] {
     const bots: MintBot[] = []
+    const providers: JsonRpcProvider[] = []
     let i = 1
+
+    for (let rpcUrl of rpcUrls) {
+        providers.push(new JsonRpcProvider(rpcUrl))
+    }
+
     for (let pk of privateKeys) {
-        const provider = new JsonRpcProvider(rpcUrl)
-        const account: Wallet = new Wallet(pk, provider)
+        /* the account needs to be connected to one of the provider just for the contract purposes
+        to check the contract, if it's a legit contract or not */
+        const account: Wallet = new Wallet(pk, providers[0])
         const webhook: Webhook = new Webhook(`Bot ${i}`)
-        const bot = new MintBot(account, webhook, provider)
-        bots.push(bot)
+        bots.push(new MintBot(account, webhook, providers))
         console.log(`Bot ${i} initiated : ${account.address}`)
         i++
     }

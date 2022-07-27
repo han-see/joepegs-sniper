@@ -1,8 +1,8 @@
 import { Provider } from "@ethersproject/providers"
 import { BigNumber, Contract, Wallet } from "ethers"
-import { Webhook } from "../commons/Webhook"
 import { FlatLaunchpegABI } from "../constants"
-import { createSignedTx, createTxData } from "../utils/tx"
+import { Webhook } from "../global/Webhook"
+import { createSignedTxs, createTxData, sleep } from "../utils/helper"
 
 export interface IMintBot {
     mintFreeFlatJoePeg: (mintTime: number, contractAddress: string) => void
@@ -11,14 +11,15 @@ export interface IMintBot {
 export class MintBot implements IMintBot {
     private account: Wallet
     private webhook: Webhook
-    private provider: Provider
-    private signedTx = ""
+    private providers: Provider[]
+    private signedTxs: string[] = []
     private flatLaunchpeg = FlatLaunchpegABI
+    private mintTries = 5
 
-    constructor(account: Wallet, webhook: Webhook, provider: Provider) {
+    constructor(account: Wallet, webhook: Webhook, providers: Provider[]) {
         this.account = account
         this.webhook = webhook
-        this.provider = provider
+        this.providers = providers
     }
 
     async mintFreeFlatJoePeg(mintTime: number, contractAddress: string) {
@@ -37,8 +38,9 @@ export class MintBot implements IMintBot {
         })
 
         if (contract !== undefined) {
-            // try -1 to offset network
-            const timediff = mintTime * 1000 - new Date().getTime() - 1
+            // this is to send the tx earlier to offset the network latency.
+            // we're gonna send tx every 1 sec with different nonce to different providers
+            const timediff = mintTime * 1000 - new Date().getTime() - 6
             // amount of nft to mint
             const args = [BigNumber.from(1)]
             try {
@@ -47,13 +49,14 @@ export class MintBot implements IMintBot {
                     "publicSaleMint",
                     args
                 )
-                this.signedTx = await createSignedTx(
+                this.signedTxs = await createSignedTxs(
                     this.account,
                     txData,
                     contractAddress,
-                    "0"
+                    "0",
+                    this.mintTries
                 )
-                console.log(`Tx generated: ${this.signedTx}`)
+                console.log(`Tx generated: ${this.signedTxs[0]}`)
                 this.webhook.sendInfoMessage(`Tx preparation completed`)
             } catch (err) {
                 console.log(err)
@@ -65,40 +68,44 @@ export class MintBot implements IMintBot {
                 setTimeout(
                     async function (
                         webhook: Webhook,
-                        provider: Provider,
-                        signedTx: string
+                        providers: Provider[],
+                        signedTxs: string[]
                     ) {
                         webhook.sendInfoMessage(
                             "Waiting to send transaction before the mint is open"
                         )
-                        for (let i = 0; i < 3; i++) {
-                            const tx = provider
-                                .sendTransaction(signedTx)
-                                .then((txResponse) => {
-                                    txResponse.wait(1).then((txReceipt) => {
-                                        if (txReceipt !== undefined) {
-                                            webhook.sendMessageToUser(
-                                                `MINT SUCCESS on tries number ${
-                                                    i + 1
-                                                }`,
-                                                JSON.stringify(
-                                                    txReceipt.transactionHash
+                        for (let signedTx of signedTxs) {
+                            for (let provider of providers) {
+                                const tx = provider
+                                    .sendTransaction(signedTx)
+                                    .then((txResponse) => {
+                                        txResponse.wait(1).then((txReceipt) => {
+                                            if (txReceipt !== undefined) {
+                                                webhook.sendMessageToUser(
+                                                    `MINT SUCCESS on tries number`,
+                                                    JSON.stringify(
+                                                        txReceipt.transactionHash
+                                                    )
                                                 )
-                                            )
-                                            console.log(txReceipt)
-                                            return
-                                        }
+                                                console.log(txReceipt)
+                                                return
+                                            }
+                                        })
                                     })
-                                })
-                                .catch((err) => {
-                                    webhook.sendInfoMessage(`Tx failed ${err}`)
-                                })
+                                    .catch((err) => {
+                                        webhook.sendInfoMessage(
+                                            `Tx failed ${err}`
+                                        )
+                                    })
+                            }
+                            // sleep for 1s before sending the next tx
+                            sleep(1000)
                         }
                     },
                     timediff,
                     this.webhook,
-                    this.provider,
-                    this.signedTx
+                    this.providers,
+                    this.signedTxs
                 )
             } else {
                 this.webhook.sendMessageToUser(

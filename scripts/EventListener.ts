@@ -1,8 +1,8 @@
 import { JsonRpcProvider } from "@ethersproject/providers"
 import { BigNumber, ethers } from "ethers"
-import { Webhook } from "../commons/Webhook"
 import { FlatLaunchpegABI } from "../constants"
-import { MintBot } from "./Bot"
+import { Webhook } from "../global/Webhook"
+import { initiateBot } from "./main"
 export interface MempoolResponse {
     blockNumber: string
     from: string
@@ -27,7 +27,8 @@ export interface FlatJoeInitializedEvent {
 export class EventListener {
     private provider: JsonRpcProvider
     private webhook: Webhook
-    private bots: MintBot[]
+    private rpcUrls: string[]
+    private privateKeys: string[]
     private joeFlatLaunchpegTopics: string = ethers.utils.id(
         "Initialized(uint256,uint256,uint256,uint256)"
     )
@@ -39,10 +40,11 @@ export class EventListener {
         topics: [this.joeFlatLaunchpegTopics],
     }
 
-    constructor(rpcUrl: string, webhook: Webhook, bots: MintBot[]) {
-        this.provider = new JsonRpcProvider(rpcUrl)
+    constructor(rpcUrls: string[], webhook: Webhook, privateKeys: string[]) {
+        this.provider = new JsonRpcProvider(rpcUrls[0])
         this.webhook = webhook
-        this.bots = bots
+        this.privateKeys = privateKeys
+        this.rpcUrls = rpcUrls
     }
 
     async listenToEventFromRpcUrl() {
@@ -58,6 +60,7 @@ export class EventListener {
                     "Event found",
                     log.transactionHash
                 )
+                let bots = await initiateBot(this.rpcUrls, this.privateKeys)
                 let events = this.iface.parseLog(log)
                 //@ts-ignore
                 const initializedEvent: FlatJoeInitializedEvent = events.args
@@ -65,7 +68,7 @@ export class EventListener {
                 this.webhook.sendInfoMessage(info)
                 console.log(info)
                 if (initializedEvent.salePrice.eq(BigNumber.from(0)))
-                    for (const i in this.bots) {
+                    for (const i in bots) {
                         {
                             const saleTime =
                                 initializedEvent.publicSaleStartTime.toNumber()
@@ -73,7 +76,7 @@ export class EventListener {
                             this.webhook.sendInfoMessage(`Initiating Bot ${i}:
                             Contract Address: ${contractAddress}
                             Sale Time: ${saleTime}`)
-                            this.bots[i].mintFreeFlatJoePeg(
+                            bots[i].mintFreeFlatJoePeg(
                                 saleTime,
                                 contractAddress
                             )
