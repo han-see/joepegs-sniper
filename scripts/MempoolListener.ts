@@ -1,7 +1,21 @@
 import { Wallet } from "ethers"
 import WebSocket from "ws"
 import { SNOWSIGHT_KEY, SNOWSIGHT_WS } from "../global/config"
-import { MempoolResponse } from "./EventListener"
+
+export interface MempoolResponse {
+    blockNumber: string
+    from: string
+    gas: string
+    gasPrice: string
+    maxFeePerGas: string
+    maxPriorityFeePerGas: string
+    hash: string
+    input: string
+    nonce: string
+    to: string
+    value: string
+    txType: string
+}
 
 export async function listenToListingEventInMempool(pk: string) {
     const account: Wallet = new Wallet(pk)
