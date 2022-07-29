@@ -1,29 +1,10 @@
 import { JsonRpcProvider } from "@ethersproject/providers"
 import { BigNumber, ethers } from "ethers"
-import { FlatLaunchpegABI } from "../constants"
-import { Webhook } from "../global/Webhook"
-import { initiateBot } from "./main"
-export interface MempoolResponse {
-    blockNumber: string
-    from: string
-    gas: string
-    gasPrice: string
-    maxFeePerGas: string
-    maxPriorityFeePerGas: string
-    hash: string
-    input: string
-    nonce: string
-    to: string
-    value: string
-    txType: string
-}
+import { initiateBot } from "../main-auto-minter"
+import { Webhook } from "../utils/webhook.service"
+import { FlatLaunchpegABI } from "../web3"
+import { FlatJoeInitializedEvent } from "./interfaces/event.interface"
 
-export interface FlatJoeInitializedEvent {
-    allowlistStartTime: BigNumber
-    publicSaleStartTime: BigNumber
-    allowlistPrice: BigNumber
-    salePrice: BigNumber
-}
 export class EventListener {
     private provider: JsonRpcProvider
     private webhook: Webhook

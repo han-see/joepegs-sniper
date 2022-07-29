@@ -1,8 +1,9 @@
 import { JsonRpcProvider } from "@ethersproject/providers"
 import { Wallet } from "ethers"
-import { privateKeys, RPC_URLS } from "../global/config"
-import { Webhook } from "../global/Webhook"
-import { MintBot } from "./Bot"
+import { privateKeys, RPC_URLS } from "./config"
+import { Webhook } from "./utils/webhook.service"
+
+import { MintBot } from "./bot/bot"
 require("dotenv").config()
 
 function runBot() {

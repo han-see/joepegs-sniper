@@ -1,9 +1,9 @@
 import { JsonRpcProvider } from "@ethersproject/providers"
 import { Wallet } from "ethers"
-import { privateKeys, RPC_URLS } from "../global/config"
-import { Webhook } from "../global/Webhook"
-import { MintBot } from "./Bot"
-import { EventListener } from "./EventListener"
+import { EventListener } from "./event/event.service"
+import { MintBot } from "./bot/bot"
+import { privateKeys, RPC_URLS } from "./config"
+import { Webhook } from "./utils/webhook.service"
 
 function runBot() {
     const listingContractWebhook = new Webhook("New listing")

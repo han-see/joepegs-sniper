@@ -1,9 +1,9 @@
 {
     "scripts": {
-        "start-main": "ts-node scripts/main.ts",
-        "start-manual": "ts-node scripts/manual-bot.ts $ADDRESS $TIMESTAMP $BOTNAME",
-        "test-main": "ts-node scripts/main.ts test",
-        "test-manual": "ts-node scripts/manual-bot.ts test $ADDRESS $TIMESTAMP $BOTNAME"
+        "start-main": "ts-node src/main-auto-minter.ts",
+        "start-manual": "ts-node src/main-manual-minter.ts $ADDRESS $TIMESTAMP $BOTNAME",
+        "test-main": "ts-node src/main-auto-minter.ts test",
+        "test-manual": "ts-node src/main-manual-minter.ts test $ADDRESS $TIMESTAMP $BOTNAME"
     },
     "devDependencies": {
         "@types/chai": "^4.3.1",

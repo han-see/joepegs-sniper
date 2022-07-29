@@ -1,12 +1,9 @@
 import { Provider } from "@ethersproject/providers"
 import { BigNumber, Contract, Wallet } from "ethers"
-import { FlatLaunchpegABI } from "../constants"
-import { Webhook } from "../global/Webhook"
-import { createSignedTxs, createTxData, sleep } from "../utils/helper"
-
-export interface IMintBot {
-    mintFreeFlatJoePeg: (mintTime: number, contractAddress: string) => void
-}
+import { FlatLaunchpegABI } from "../web3"
+import { createSignedTxs, createTxData, sleep } from "../utils"
+import { Webhook } from "../utils/webhook.service"
+import { IMintBot } from "./interfaces/mintbot.interface"
 
 export class MintBot implements IMintBot {
     private account: Wallet
