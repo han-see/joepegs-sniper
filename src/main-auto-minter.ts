@@ -1,6 +1,6 @@
 import { JsonRpcProvider } from "@ethersproject/providers"
 import { Wallet } from "ethers"
-import { EventListener } from "./event/event.service"
+import { EventListener } from "./event/event"
 import { MintBot } from "./bot/bot"
 import { privateKeys, RPC_URLS } from "./config"
 import { Webhook } from "./utils/webhook.service"
