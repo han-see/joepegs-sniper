@@ -19,3 +19,9 @@ export const privateKeys: string[] = JSON.parse(
 export const RPC_URLS: string[] = JSON.parse(
     isTest ? process.env.TEST_RPC! : process.env.RPC_URLS!
 )
+
+export const contractAddress = process.env.ADDRESS || "0x"
+
+export const timestamp = parseInt(process.env.TIMESTAMP || "0")
+
+export const botName = process.env.BOTNAME || "NFT"

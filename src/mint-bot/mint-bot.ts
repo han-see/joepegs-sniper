@@ -1,7 +1,7 @@
 import { Provider } from "@ethersproject/providers"
 import { BigNumber, Contract, Wallet } from "ethers"
 import { FlatLaunchpegABI } from "../web3"
-import { createSignedTxs, createTxData, sleep } from "../utils"
+import { createSignedTxs, createTxData, sleep } from "../utils/tx.service"
 import { Webhook } from "../utils/webhook.service"
 import { IMintBot } from "./interfaces/mint-bot.interface"
 

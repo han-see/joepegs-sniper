@@ -1,6 +1,6 @@
 import { JsonRpcProvider } from "@ethersproject/providers"
 import { BigNumber, ethers } from "ethers"
-import { initiateBot } from "../main-auto-minter"
+import { initiateBot } from "../mint-bot/mint-bot.service"
 import { Webhook } from "../utils/webhook.service"
 import { FlatLaunchpegABI } from "../web3"
 import { FlatJoeInitializedEvent } from "./interfaces/event.interface"

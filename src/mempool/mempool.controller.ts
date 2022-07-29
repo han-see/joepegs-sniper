@@ -1,6 +1,6 @@
 import { Wallet } from "ethers"
 import WebSocket from "ws"
-import { SNOWSIGHT_KEY, SNOWSIGHT_WS } from "../config"
+import { SNOWSIGHT_KEY, SNOWSIGHT_WS } from "../config/index"
 import { MempoolResponse } from "./interfaces/mempool.interface"
 
 export async function listenToListingEventInMempool(pk: string) {
