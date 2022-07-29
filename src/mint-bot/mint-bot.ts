@@ -3,7 +3,7 @@ import { BigNumber, Contract, Wallet } from "ethers"
 import { FlatLaunchpegABI } from "../web3"
 import { createSignedTxs, createTxData, sleep } from "../utils"
 import { Webhook } from "../utils/webhook.service"
-import { IMintBot } from "./interfaces/mintbot.interface"
+import { IMintBot } from "./interfaces/mint-bot.interface"
 
 export class MintBot implements IMintBot {
     private account: Wallet

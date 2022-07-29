@@ -3,7 +3,7 @@ import { Wallet } from "ethers"
 import { privateKeys, RPC_URLS } from "./config"
 import { Webhook } from "./utils/webhook.service"
 
-import { MintBot } from "./bot/bot"
+import { MintBot } from "./mint-bot/mint-bot"
 require("dotenv").config()
 
 function runBot() {
