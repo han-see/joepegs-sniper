@@ -1,4 +1,4 @@
-import { BigNumber, Wallet } from "ethers"
+import { BigNumber, Contract, Wallet } from "ethers"
 import {
     Interface,
     parseEther,
@@ -49,6 +49,13 @@ export async function createTxData(
 ) {
     const iface = new Interface(abi)
     return iface.encodeFunctionData(functionCall, args)
+}
+
+export const isContractValid = async (
+    contract: Contract,
+    contractAddress: string
+): Promise<boolean> => {
+    return (await contract.provider.getCode(contractAddress)) != undefined
 }
 
 export const sleep = promisify(setTimeout)
