@@ -1,8 +1,13 @@
 import { Provider } from "@ethersproject/providers"
 import { BigNumber, Contract, Wallet } from "ethers"
-import { FlatLaunchpegABI } from "../web3"
-import { createSignedTxs, createTxData, sleep } from "../utils/tx.service"
+import {
+    createSignedTxs,
+    createTxData,
+    isContractValid,
+    sleep,
+} from "../utils/web3.service"
 import { Webhook } from "../utils/webhook.service"
+import { FlatLaunchpegABI } from "../web3"
 import { IMintBot } from "./interfaces/mint-bot.interface"
 
 export class MintBot implements IMintBot {
@@ -26,13 +31,12 @@ export class MintBot implements IMintBot {
             this.account
         )
 
-        contract.provider.getCode(contractAddress).catch((err) => {
+        if (!(await isContractValid(contract, contractAddress))) {
             const errorMessage =
                 "This is probably a wrong contract address. Please check it again"
             console.error(errorMessage)
             this.webhook.sendMessageToUser(errorMessage)
-            console.log(err)
-        })
+        }
 
         if (contract !== undefined) {
             // this is to send the tx earlier to offset the network latency.
