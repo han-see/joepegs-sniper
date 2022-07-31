@@ -41,10 +41,11 @@ export class EventListener {
                     "Event found",
                     log.transactionHash
                 )
-                let bots = await initiateBot(this.rpcUrls, this.privateKeys)
-                let events = this.iface.parseLog(log)
-                //@ts-ignore
-                const initializedEvent: FlatJoeInitializedEvent = events.args
+                const bots = await initiateBot(this.rpcUrls, this.privateKeys)
+                const events = this.iface.parseLog(log)
+                /* eslint @typescript-eslint/ban-ts-comment: "off" */
+                // @ts-ignore
+                const initializedEvent = events.args as FlatJoeInitializedEvent
                 const info = `Flat Joe event found. Public listing start at ${initializedEvent.publicSaleStartTime.toNumber()}. Minting price ${initializedEvent.salePrice.toNumber()} AVAX`
                 this.webhook.sendInfoMessage(info)
                 console.log(info)

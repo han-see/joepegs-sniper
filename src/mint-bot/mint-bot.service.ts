@@ -2,7 +2,6 @@ import { JsonRpcProvider } from "@ethersproject/providers"
 import { Wallet } from "ethers"
 import { Webhook } from "../utils/webhook.service"
 import { MintBot } from "./mint-bot"
-require("dotenv").config()
 
 export function initiateBot(
     rpcUrls: string[],
@@ -12,11 +11,11 @@ export function initiateBot(
     const providers: JsonRpcProvider[] = []
     let i = 1
 
-    for (let rpcUrl of rpcUrls) {
+    for (const rpcUrl of rpcUrls) {
         providers.push(new JsonRpcProvider(rpcUrl))
     }
 
-    for (let pk of privateKeys) {
+    for (const pk of privateKeys) {
         /* the account needs to be connected to one of the provider just for the contract purposes
         to check the contract, if it's a legit contract or not */
         const account: Wallet = new Wallet(pk, providers[0])
@@ -37,11 +36,11 @@ export function initiateManualBot(
     const providers: JsonRpcProvider[] = []
     let i = 1
 
-    for (let rpcUrl of rpcUrls) {
+    for (const rpcUrl of rpcUrls) {
         providers.push(new JsonRpcProvider(rpcUrl))
     }
 
-    for (let pk of privateKeys) {
+    for (const pk of privateKeys) {
         const account: Wallet = new Wallet(pk, providers[0])
         const webhook: Webhook = new Webhook(`${botName} Manual Bot ${i}`)
         const bot = new MintBot(account, webhook, providers)

@@ -75,8 +75,8 @@ export class MintBot implements IMintBot {
                         webhook.sendInfoMessage(
                             "Waiting to send transaction before the mint is open"
                         )
-                        for (let signedTx of signedTxs) {
-                            for (let provider of providers) {
+                        for (const signedTx of signedTxs) {
+                            for (const provider of providers) {
                                 const tx = provider
                                     .sendTransaction(signedTx)
                                     .then((txResponse) => {

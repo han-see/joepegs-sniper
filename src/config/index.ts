@@ -1,6 +1,10 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-var-requires*/
 require("dotenv").config()
 
 export const SNOWSIGHT_WS = "ws://mempool-stream.snowsight.chainsight.dev:8589"
+
+export const DISCORD_WEBHOOK = process.env.USER_DISCORD_WEBHOOK!
 
 // Snowsight key
 export const SNOWSIGHT_KEY =

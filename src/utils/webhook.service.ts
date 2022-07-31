@@ -1,4 +1,5 @@
 import { MessageEmbed, WebhookClient } from "discord.js"
+import { DISCORD_WEBHOOK } from "../config"
 
 /**
  * This class is use to send a message to the user discord
@@ -6,7 +7,7 @@ import { MessageEmbed, WebhookClient } from "discord.js"
 export class Webhook {
     private embed: MessageEmbed
     private userWebhookClient = new WebhookClient({
-        url: process.env.USER_DISCORD_WEBHOOK!,
+        url: DISCORD_WEBHOOK,
     })
 
     constructor(private title: string) {

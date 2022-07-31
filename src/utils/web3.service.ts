@@ -33,6 +33,7 @@ export async function createSignedTxs(
             chainId: chainId,
             type: 2,
         }
+        /* eslint-disable @typescript-eslint/ban-ts-comment */
         // @ts-ignore
         const signedTx = await account.signTransaction(unSignedTx)
         signedTxs.push(signedTx)
