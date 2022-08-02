@@ -77,23 +77,33 @@ export class MintBot implements IMintBot {
                         )
                         for (let signedTx of signedTxs) {
                             for (let provider of providers) {
+                                console.log(`Sending tx`)
                                 const tx = provider
                                     .sendTransaction(signedTx)
                                     .then((txResponse) => {
-                                        txResponse.wait(1).then((txReceipt) => {
-                                            if (txReceipt !== undefined) {
-                                                webhook.sendMessageToUser(
-                                                    `MINT SUCCESS on tries number`,
-                                                    JSON.stringify(
-                                                        txReceipt.transactionHash
+                                        txResponse
+                                            .wait(1)
+                                            .then((txReceipt) => {
+                                                if (txReceipt !== undefined) {
+                                                    webhook.sendMessageToUser(
+                                                        `MINT SUCCESS on tries number`,
+                                                        JSON.stringify(
+                                                            txReceipt.transactionHash
+                                                        )
                                                     )
+                                                    console.log(txReceipt)
+                                                    return
+                                                }
+                                            })
+                                            .catch((error) => {
+                                                console.log(error)
+                                                webhook.sendInfoMessage(
+                                                    `Tx failed ${error}`
                                                 )
-                                                console.log(txReceipt)
-                                                return
-                                            }
-                                        })
+                                            })
                                     })
                                     .catch((err) => {
+                                        console.log(err)
                                         webhook.sendInfoMessage(
                                             `Tx failed ${err}`
                                         )
