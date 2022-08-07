@@ -43,7 +43,7 @@ export class MintBot implements IMintBot {
         if (contract !== undefined) {
             // this is to send the tx earlier to offset the network latency.
             // we're gonna send tx every 1 sec with different nonce to different providers
-            const timediff = mintTime * 1000 - new Date().getTime() - 6
+            const timediff = mintTime * 1000 - Date.now() - 6000
             // amount of nft to mint
             const args = [BigNumber.from(1)]
             try {
@@ -71,9 +71,9 @@ export class MintBot implements IMintBot {
                 this.webhook.sendInfoMessage(
                     "Waiting to send transaction before the mint is open"
                 )
-                sleep(timediff)
-                for (let signedTx of this.signedTxs) {
-                    for (let provider of this.providers) {
+                await sleep(timediff)
+                for (const signedTx of this.signedTxs) {
+                    for (const provider of this.providers) {
                         this.log.info(`Sending tx`)
                         const tx = provider
                             .sendTransaction(signedTx)
@@ -105,7 +105,7 @@ export class MintBot implements IMintBot {
                             })
                     }
                     // sleep for 1s before sending the next tx
-                    sleep(1000)
+                    await sleep(1000)
                 }
             } else {
                 this.webhook.sendMessageToUser(
