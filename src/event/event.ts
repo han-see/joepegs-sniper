@@ -1,11 +1,13 @@
 import { JsonRpcProvider } from "@ethersproject/providers"
 import { BigNumber, ethers } from "ethers"
+import { Logger } from "tslog"
 import { initiateBot } from "../mint-bot/mint-bot.service"
 import { Webhook } from "../utils/webhook.service"
 import { FlatLaunchpegABI } from "../web3"
 import { FlatJoeInitializedEvent } from "./interfaces/event.interface"
 
 export class EventListener {
+    private log = new Logger()
     private provider: JsonRpcProvider
     private webhook: Webhook
     private rpcUrls: string[]
@@ -33,9 +35,9 @@ export class EventListener {
             throw "Provider is undefined"
         }
 
-        console.log("Listening to event")
+        this.log.info("Listening to event")
         this.provider.on(this.filterLog, async (log) => {
-            console.log(log)
+            this.log.info(log)
             if (log !== undefined) {
                 this.webhook.sendMessageToUser(
                     "Event found",
@@ -47,7 +49,7 @@ export class EventListener {
                 const initializedEvent: FlatJoeInitializedEvent = events.args
                 const info = `Flat Joe event found. Public listing start at ${initializedEvent.publicSaleStartTime.toNumber()}. Minting price ${initializedEvent.salePrice.toNumber()} AVAX`
                 this.webhook.sendInfoMessage(info)
-                console.log(info)
+                this.log.info(info)
                 if (initializedEvent.salePrice.eq(BigNumber.from(0)))
                     for (const i in bots) {
                         {
@@ -67,7 +69,7 @@ export class EventListener {
         })
         this.provider.on("block", (blockNumber) => {
             if (parseInt(blockNumber) % 5000 == 0) {
-                console.log(`Current blocknumber ${blockNumber}`)
+                this.log.info(`Current blocknumber ${blockNumber}`)
             }
         })
     }
@@ -78,7 +80,7 @@ export class EventListener {
         let isEventFound = false
 
         while (!isEventFound) {
-            console.log(
+            this.log.info(
                 `Checking the latest listing Event from block ${currentBlock}`
             )
             // max query set data is 2048 (avax node)
@@ -88,7 +90,7 @@ export class EventListener {
                 toBlock: currentBlock,
                 ...this.filterLog,
             })
-            console.log(getSaleEvent)
+            this.log.info(getSaleEvent)
             if (getSaleEvent.length === 0) {
                 currentBlock = pastBlock
                 pastBlock -= 2000
@@ -96,7 +98,7 @@ export class EventListener {
                 const txReceipt = await this.provider.getTransactionReceipt(
                     getSaleEvent[0].transactionHash
                 )
-                console.log("TXRECEIPT", txReceipt)
+                this.log.info("TXRECEIPT", txReceipt)
                 await this.webhook.sendMessageToUser(
                     JSON.stringify(getSaleEvent),
                     getSaleEvent[0].transactionHash

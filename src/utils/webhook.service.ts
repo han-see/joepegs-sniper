@@ -1,9 +1,11 @@
 import { MessageEmbed, WebhookClient } from "discord.js"
+import { Logger } from "tslog"
 
 /**
  * This class is use to send a message to the user discord
  */
 export class Webhook {
+    private log = new Logger()
     private embed: MessageEmbed
     private userWebhookClient = new WebhookClient({
         url: process.env.USER_DISCORD_WEBHOOK!,
@@ -22,7 +24,7 @@ export class Webhook {
                 embeds: [this.embed],
             })
             .catch((err) => {
-                console.error("Cannot send message to discord", err)
+                this.log.error("Cannot send message to discord", err)
             })
     }
 
@@ -33,7 +35,7 @@ export class Webhook {
                 embeds: [this.embed],
             })
             .catch((err) => {
-                console.error("Cannot send message to discord", err)
+                this.log.error("Cannot send message to discord", err)
             })
     }
 }
