@@ -1,10 +1,11 @@
 {
     "scripts": {
         "build": "tsc -p tsconfig.json",
-        "start-main": "node build/main-auto-minter.js",
-        "start-manual": "node build/main-manual-minter.js $ADDRESS $TIMESTAMP $BOTNAME",
-        "test-main": "node build/main-auto-minter.js test",
-        "test-manual": "node build/main-manual-minter.js test $ADDRESS $TIMESTAMP $BOTNAME",
+        "start:main": "node build/main-auto-minter.js",
+        "start:manual": "node build/main-manual-minter.js $ADDRESS $TIMESTAMP $BOTNAME",
+        "test": "docker-compose -f docker-compose.dev.yml up --build",
+        "test:main": "node build/main-auto-minter.js $TEST",
+        "test:manual": "node build/main-manual-minter.js $TEST $ADDRESS $TIMESTAMP $BOTNAME",
         "lint": "eslint src/**/*.ts",
         "prune:production": "npm prune --production && rm -rf ./src && rm -rf node_modules"
     },

@@ -16,4 +16,4 @@ COPY --from=base /app/. .
 RUN npm ci --omit=dev
 
 # Run the app from the image
-CMD ["npm", "run", "start-main"]
+CMD ["npm", "run", "start:main"]
