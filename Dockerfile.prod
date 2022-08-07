@@ -1,0 +1,19 @@
+# Pull official base image as base to use in later stage
+FROM node:alpine AS base
+
+# Workdir
+WORKDIR /app
+
+# install app dependencies
+COPY package.json package.json
+COPY package-lock.json package-lock.json
+COPY . .
+RUN npm install && npm run build && npm run prune:production
+
+FROM node:alpine
+WORKDIR /app
+COPY --from=base /app/. .
+RUN npm ci --omit=dev
+
+# Run the app from the image
+CMD ["npm", "run", "start-main"]
