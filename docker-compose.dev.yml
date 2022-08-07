@@ -1,0 +1,16 @@
+version: "3.7"
+services:
+    minter:
+        build:
+            context: .
+            dockerfile: Dockerfile.dev
+        environment:
+            - ISTEST=true
+    hardhat:
+        image: launchpeg:0.0.1
+        command: >
+            sh -c "
+            npx hardhat node &&
+            npx hardhat deploy-flatlaunchpeg --network localhost --config-filename flat-example.json"
+        ports:
+            - "8545:8545"

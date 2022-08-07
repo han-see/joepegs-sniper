@@ -1,0 +1,6 @@
+version: "0.0.1"
+services:
+    minter:
+        build:
+            context: .
+            dockerfile: Dockerfile.prod
