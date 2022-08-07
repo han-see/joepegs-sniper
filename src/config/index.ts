@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 /* eslint-disable @typescript-eslint/no-var-requires*/
 require("dotenv").config()
 
@@ -16,7 +17,8 @@ export const JOEPEGS_FACTORY_CONTRACT =
 export const JOEPEGS_PROXY_CONTRACT =
     "0x64c4607AD853999EE5042Ba8377BfC4099C273DE"
 
-export const isTest = process.argv[2] === "test" ? true : false
+export const isTest = process.env.ISTEST === "true" ? true : false
+
 export const privateKeys: string[] = JSON.parse(
     isTest ? process.env.TEST_PK! : process.env.PRIVATE_KEY!
 )
