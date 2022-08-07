@@ -1,4 +1,5 @@
 import { JsonRpcProvider } from "@ethersproject/providers"
+import { Logger } from "tslog"
 import {
     botName,
     contractAddress,
@@ -10,11 +11,13 @@ import { MintBot } from "./mint-bot/mint-bot"
 import { initiateManualBot, manualMint } from "./mint-bot/mint-bot.service"
 import { Webhook } from "./utils/webhook.service"
 
+const log: Logger = new Logger()
+
 function runBot() {
     const bots: MintBot[] = initiateManualBot(RPC_URLS, privateKeys, botName)
 
-    console.log("Contract Address: ", contractAddress)
-    console.log("Mint open on: ", timestamp)
+    log.info("Contract Address: ", contractAddress)
+    log.info("Mint open on: ", timestamp)
 
     manualMint(
         timestamp,

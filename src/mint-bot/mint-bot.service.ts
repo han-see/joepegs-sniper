@@ -1,7 +1,10 @@
 import { JsonRpcProvider } from "@ethersproject/providers"
 import { Wallet } from "ethers"
+import { Logger } from "tslog"
 import { Webhook } from "../utils/webhook.service"
 import { MintBot } from "./mint-bot"
+
+const log: Logger = new Logger()
 
 export function initiateBot(
     rpcUrls: string[],
@@ -21,7 +24,7 @@ export function initiateBot(
         const account: Wallet = new Wallet(pk, providers[0])
         const webhook: Webhook = new Webhook(`Bot ${i}`)
         bots.push(new MintBot(account, webhook, providers))
-        console.log(`Bot ${i} initiated : ${account.address}`)
+        log.info(`Bot ${i} initiated : ${account.address}`)
         i++
     }
     return bots
@@ -45,7 +48,7 @@ export function initiateManualBot(
         const webhook: Webhook = new Webhook(`${botName} Manual Bot ${i}`)
         const bot = new MintBot(account, webhook, providers)
         bots.push(bot)
-        console.log(`${botName} Manual Bot ${i} initiated : ${account.address}`)
+        log.info(`${botName} Manual Bot ${i} initiated : ${account.address}`)
         i++
     }
     return bots
@@ -60,7 +63,7 @@ export async function manualMint(
 ) {
     let counter = 1
     for (const bot of bots) {
-        console.log(`Initiating bot ${counter}`)
+        log.info(`Initiating bot ${counter}`)
         bot.mintFreeFlatJoePeg(mintTime, contractAddress)
         counter++
     }
@@ -68,7 +71,7 @@ export async function manualMint(
     const blockNumber = await provider.getBlockNumber()
     const blockTimestamp = (await provider.getBlock(blockNumber)).timestamp
     if (blockTimestamp > mintTime) {
-        console.log("Mint time is in the past. Turning off manual minting.")
+        log.info("Mint time is in the past. Turning off manual minting.")
         await webhook.sendMessageToUser(
             `Manual minting time for ${contractAddress} is in the past. Turning off manual bot`
         )

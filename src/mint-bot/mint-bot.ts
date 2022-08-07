@@ -1,5 +1,6 @@
 import { Provider } from "@ethersproject/providers"
 import { BigNumber, Contract, Wallet } from "ethers"
+import { Logger } from "tslog"
 import {
     createSignedTxs,
     createTxData,
@@ -11,6 +12,7 @@ import { FlatLaunchpegABI } from "../web3"
 import { IMintBot } from "./interfaces/mint-bot.interface"
 
 export class MintBot implements IMintBot {
+    private log = new Logger()
     private account: Wallet
     private webhook: Webhook
     private providers: Provider[]
@@ -34,7 +36,7 @@ export class MintBot implements IMintBot {
         if (!(await isContractValid(contract, contractAddress))) {
             const errorMessage =
                 "This is probably a wrong contract address. Please check it again"
-            console.error(errorMessage)
+            this.log.error(errorMessage)
             this.webhook.sendMessageToUser(errorMessage)
         }
 
@@ -57,57 +59,54 @@ export class MintBot implements IMintBot {
                     "0",
                     this.mintTries
                 )
-                console.log(`Tx generated: ${this.signedTxs[0]}`)
+                this.log.info(`Tx generated: ${this.signedTxs[0]}`)
                 this.webhook.sendInfoMessage(`Tx preparation completed`)
             } catch (err) {
-                console.log(err)
+                this.log.error(err)
                 this.webhook.sendMessageToUser(
                     `Error during creating tx: ${err}`
                 )
             }
             if (timediff > 0) {
-                setTimeout(
-                    async function (
-                        webhook: Webhook,
-                        providers: Provider[],
-                        signedTxs: string[]
-                    ) {
-                        webhook.sendInfoMessage(
-                            "Waiting to send transaction before the mint is open"
-                        )
-                        for (const signedTx of signedTxs) {
-                            for (const provider of providers) {
-                                const tx = provider
-                                    .sendTransaction(signedTx)
-                                    .then((txResponse) => {
-                                        txResponse.wait(1).then((txReceipt) => {
-                                            if (txReceipt !== undefined) {
-                                                webhook.sendMessageToUser(
-                                                    `MINT SUCCESS on tries number`,
-                                                    JSON.stringify(
-                                                        txReceipt.transactionHash
-                                                    )
+                this.webhook.sendInfoMessage(
+                    "Waiting to send transaction before the mint is open"
+                )
+                sleep(timediff)
+                for (let signedTx of this.signedTxs) {
+                    for (let provider of this.providers) {
+                        this.log.info(`Sending tx`)
+                        const tx = provider
+                            .sendTransaction(signedTx)
+                            .then((txResponse) => {
+                                txResponse
+                                    .wait(1)
+                                    .then((txReceipt) => {
+                                        if (txReceipt !== undefined) {
+                                            this.webhook.sendMessageToUser(
+                                                `MINT SUCCESS on tries number`,
+                                                JSON.stringify(
+                                                    txReceipt.transactionHash
                                                 )
-                                                console.log(txReceipt)
-                                                return
-                                            }
-                                        })
+                                            )
+                                            this.log.info(txReceipt)
+                                            return
+                                        }
                                     })
-                                    .catch((err) => {
-                                        webhook.sendInfoMessage(
-                                            `Tx failed ${err}`
+                                    .catch((error) => {
+                                        this.log.error(error)
+                                        this.webhook.sendInfoMessage(
+                                            `Tx failed ${error}`
                                         )
                                     })
-                            }
-                            // sleep for 1s before sending the next tx
-                            sleep(1000)
-                        }
-                    },
-                    timediff,
-                    this.webhook,
-                    this.providers,
-                    this.signedTxs
-                )
+                            })
+                            .catch((err) => {
+                                this.log.error(err)
+                                this.webhook.sendInfoMessage(`Tx failed ${err}`)
+                            })
+                    }
+                    // sleep for 1s before sending the next tx
+                    sleep(1000)
+                }
             } else {
                 this.webhook.sendMessageToUser(
                     "Timediff is wrong. Please check the contract"

@@ -1,4 +1,5 @@
 import { Wallet } from "ethers"
+import { Logger } from "tslog"
 import WebSocket from "ws"
 import { SNOWSIGHT_KEY, SNOWSIGHT_WS } from "../config/index"
 import { MempoolResponse } from "./interfaces/mempool.interface"
@@ -6,6 +7,7 @@ import { MempoolResponse } from "./interfaces/mempool.interface"
 export async function listenToListingEventInMempool(pk: string) {
     const account: Wallet = new Wallet(pk)
     const signed_key = await account.signMessage(SNOWSIGHT_KEY)
+    const log: Logger = new Logger()
 
     const message = JSON.stringify({
         signed_key: signed_key,
@@ -18,11 +20,11 @@ export async function listenToListingEventInMempool(pk: string) {
         ws.send(message)
     })
 
-    console.log("Listening to sell listing event")
+    log.info("Listening to sell listing event")
 
     ws.on("message", (data) => {
         const mempoolResponse: MempoolResponse = JSON.parse(data.toString())
-        //console.log(mempoolResponse)
-        console.log(+mempoolResponse.blockNumber)
+        log.info(mempoolResponse)
+        log.silly(+mempoolResponse.blockNumber)
     })
 }
