@@ -1,30 +1,17 @@
-## How to start joepegs manual sniper using the pm2
+## Automatic free joepegs nft minter
 
-To create a new instance use this command
+This bot is going to listen for the free minting event automatically and try to mint the nft automatically. When an event found, it's going to send a discord message with the event details.
 
-```
-pm2 start manual.sh --no-autorestart --name your-bot-name -- here args blabla
-```
 
-To use the current instance
+## Running the bot
 
-```
-pm2 restart manual-bot-X -- contractAddress timestamp botname
-```
-
-Example of a script to pass the args into the run time
+You need to create env files with the following parameter to run the bot.
 
 ```
-#!/bin/bash
-set -x
-cd joepegs-sniper/
-git pull
-npm ci
-ADDRESS=$1 TIMESTAMP=$2 BOTNAME=$3 npm run start-manual
-```
-
-In the npm scripts you can write it like this
-
-```
-"start-manual": "ts-node scripts/manual-bot.ts $ADDRESS $TIMESTAMP $BOTNAME",
+PRIVATE_KEY=[xxx, xxx]
+RPC_URLS=[xxx,xxx]
+USER_DISCORD_WEBHOOK=xxx
+DISCORD_USER_ID=xxx
+TEST_PK=[xxx, xxx]
+TEST_RPC=[xxx]
 ```
