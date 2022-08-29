@@ -11,8 +11,6 @@ function runBot() {
         privateKeys
     )
     eventListener.listenToEventFromRpcUrl()
-    // eventListener.getLastFlatLaunchpeg();
-    // listenToListingEventInMempool(JSON.parse(mainPK)[0])
 }
 
 runBot()
